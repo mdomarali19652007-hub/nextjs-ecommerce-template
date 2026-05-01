@@ -1,17 +1,18 @@
 import React from "react";
 import ShopWithoutSidebar from "@/components/ShopWithoutSidebar";
+import { getShopData } from "@/components/Shop/shopData";
 
 import { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Shop Page | NextCommerce Nextjs E-commerce template",
-  description: "This is Shop Page for NextCommerce Template",
-  // other metadata
+  description: "Browse the full catalog without the filter sidebar.",
 };
 
-const ShopWithoutSidebarPage = () => {
+const ShopWithoutSidebarPage = async () => {
+  const initialProducts = await getShopData({ limit: 24 });
   return (
     <main>
-      <ShopWithoutSidebar />
+      <ShopWithoutSidebar initialProducts={initialProducts} />
     </main>
   );
 };

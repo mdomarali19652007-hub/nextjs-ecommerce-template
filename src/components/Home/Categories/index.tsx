@@ -1,15 +1,22 @@
 "use client";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { useCallback, useRef, useEffect } from "react";
-import data from "./categoryData";
+import staticCategories from "./categoryData";
 import Image from "next/image";
+import type { StorefrontCategory } from "@/lib/medusa/types";
 
 // Import Swiper styles
 import "swiper/css/navigation";
 import "swiper/css";
 import SingleItem from "./SingleItem";
 
-const Categories = () => {
+type Props = { initialCategories?: StorefrontCategory[] };
+
+const Categories = ({ initialCategories }: Props = {}) => {
+  const data =
+    initialCategories && initialCategories.length > 0
+      ? initialCategories
+      : staticCategories;
   const sliderRef = useRef(null);
 
   const handlePrev = useCallback(() => {

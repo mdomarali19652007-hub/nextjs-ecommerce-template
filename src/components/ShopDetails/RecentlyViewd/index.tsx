@@ -1,16 +1,20 @@
 "use client";
 import React from "react";
-import shopData from "@/components/Shop/shopData";
+import staticShopData from "@/components/Shop/shopData";
 import ProductItem from "@/components/Common/ProductItem";
 import Image from "next/image";
 import Link from "next/link";
+import type { Product } from "@/types/product";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import { useCallback, useRef } from "react";
 import "swiper/css/navigation";
 import "swiper/css";
 
-const RecentlyViewdItems = () => {
+type Props = { products?: Product[] };
+
+const RecentlyViewdItems = ({ products }: Props = {}) => {
+  const items = products && products.length > 0 ? products : staticShopData;
   const sliderRef = useRef(null);
 
   const handlePrev = useCallback(() => {
@@ -89,7 +93,7 @@ const RecentlyViewdItems = () => {
             spaceBetween={20}
             className="justify-between"
           >
-            {shopData.map((item, key) => (
+            {items.map((item, key) => (
               <SwiperSlide key={key}>
                 <ProductItem item={item} />
               </SwiperSlide>

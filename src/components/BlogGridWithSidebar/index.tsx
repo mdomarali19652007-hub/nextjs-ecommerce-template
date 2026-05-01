@@ -1,14 +1,17 @@
 import React from "react";
 import Breadcrumb from "../Common/Breadcrumb";
 import BlogItem from "../Blog/BlogItem";
-import blogData from "../BlogGrid/blogData"; 
-import SearchForm from "../Blog/SearchForm"; 
+import blogData from "../BlogGrid/blogData";
+import SearchForm from "../Blog/SearchForm";
 import LatestPosts from "../Blog/LatestPosts";
 import LatestProducts from "../Blog/LatestProducts";
 import Categories from "../Blog/Categories";
-import shopData from "../Shop/shopData"; 
- 
-const BlogGridWithSidebar = () => {
+import { getShopData } from "../Shop/shopData";
+
+// TODO: migrate blog posts to a real CMS. Editorial content is intentionally
+// preserved as static data for now.
+const BlogGridWithSidebar = async () => {
+  const products = await getShopData({ limit: 6 });
   const categories = [
     {
       name: "Desktop",
@@ -179,7 +182,7 @@ const BlogGridWithSidebar = () => {
               <LatestPosts blogs={blogData} />
 
               {/* <!-- Latest Products box --> */}
-              <LatestProducts products={shopData} />
+              <LatestProducts products={products} />
 
               {/* <!-- Popular Category box --> */}
               <Categories categories={categories} />
