@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Product } from "@/types/product";
 import { useModalContext } from "@/app/context/QuickViewModalContext";
 import { updateQuickView } from "@/redux/features/quickView-slice";
-import { addItemToCart } from "@/redux/features/cart-slice";
+import { addItemToCartAsync } from "@/redux/features/cart-thunks";
 import { addItemToWishlist } from "@/redux/features/wishlist-slice";
 import { updateproductDetails } from "@/redux/features/product-details";
 import { useDispatch } from "react-redux";
@@ -24,7 +24,7 @@ const ProductItem = ({ item }: { item: Product }) => {
   // add to cart
   const handleAddToCart = () => {
     dispatch(
-      addItemToCart({
+      addItemToCartAsync({
         ...item,
         quantity: 1,
       })

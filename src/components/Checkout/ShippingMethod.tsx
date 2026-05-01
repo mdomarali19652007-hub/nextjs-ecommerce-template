@@ -1,8 +1,47 @@
-import React, { useState } from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
+import { useDispatch } from "react-redux";
+import type { AppDispatch } from "@/redux/store";
+import { setShippingMethodAsync } from "@/redux/features/cart-thunks";
+import { listShippingOptions } from "@/lib/medusa/cart";
+
+type Option = { id: string; name: string; amount?: number };
 
 const ShippingMethod = () => {
+  const dispatch = useDispatch<AppDispatch>();
   const [shippingMethod, setShippingMethod] = useState("free");
+  const [options, setOptions] = useState<Option[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const result = await listShippingOptions();
+      if (cancelled) return;
+      const mapped: Option[] = (result as unknown as Array<Record<string, unknown>>).map(
+        (opt) => ({
+          id: String(opt.id),
+          name: typeof opt.name === "string" ? opt.name : "Shipping",
+          amount:
+            typeof opt.amount === "number"
+              ? (opt.amount as number)
+              : undefined,
+        })
+      );
+      setOptions(mapped);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const handleChoose = (key: string) => {
+    setShippingMethod(key);
+    // If Medusa is up and we matched a real option id, push it to the cart.
+    const live = options.find((o) => o.id === key);
+    if (live) dispatch(setShippingMethodAsync(live.id));
+  };
+
   return (
     <div className="bg-white shadow-1 rounded-[10px] mt-7.5">
       <div className="border-b border-gray-3 py-5 px-4 sm:px-8.5">
@@ -21,9 +60,8 @@ const ShippingMethod = () => {
                 name="free"
                 id="free"
                 className="sr-only"
-                onChange={() => setShippingMethod("free")}
+                onChange={() => handleChoose("free")}
               />
-              {/* selectShipping === 'free' ? 'border-4 border-blue' : 'border border-gray-4' */}
               <div
                 className={`flex h-4 w-4 items-center justify-center rounded-full ${
                   shippingMethod === "free"
@@ -45,7 +83,7 @@ const ShippingMethod = () => {
                 name="fedex"
                 id="fedex"
                 className="sr-only"
-                onChange={() => setShippingMethod("fedex")}
+                onChange={() => handleChoose("fedex")}
               />
               <div
                 className={`flex h-4 w-4 items-center justify-center rounded-full ${
@@ -85,7 +123,7 @@ const ShippingMethod = () => {
                 name="dhl"
                 id="dhl"
                 className="sr-only"
-                onChange={() => setShippingMethod("dhl")}
+                onChange={() => handleChoose("dhl")}
               />
               <div
                 className={`flex h-4 w-4 items-center justify-center rounded-full ${
@@ -114,6 +152,38 @@ const ShippingMethod = () => {
               </div>
             </div>
           </label>
+
+          {options.length > 0 ? (
+            <div className="border-t border-gray-3 pt-4 flex flex-col gap-2">
+              <p className="text-custom-sm text-dark-5">
+                Available shipping options for this cart:
+              </p>
+              {options.map((opt) => (
+                <label
+                  key={opt.id}
+                  className="flex cursor-pointer select-none items-center gap-3.5"
+                >
+                  <div className="relative">
+                    <input
+                      type="checkbox"
+                      name={opt.id}
+                      id={opt.id}
+                      className="sr-only"
+                      onChange={() => handleChoose(opt.id)}
+                    />
+                    <div
+                      className={`flex h-4 w-4 items-center justify-center rounded-full ${
+                        shippingMethod === opt.id
+                          ? "border-4 border-blue"
+                          : "border border-gray-4"
+                      }`}
+                    ></div>
+                  </div>
+                  <span>{opt.name}</span>
+                </label>
+              ))}
+            </div>
+          ) : null}
         </div>
       </div>
     </div>

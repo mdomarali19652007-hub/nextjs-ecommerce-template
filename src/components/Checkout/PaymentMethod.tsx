@@ -1,8 +1,18 @@
-import React, { useState } from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
+import { initiatePayment } from "@/lib/medusa/cart";
 
 const PaymentMethod = () => {
   const [payment, setPayment] = useState("bank");
+
+  // Eagerly initiate a payment session against Medusa so cart.complete()
+  // succeeds on submit. We use the default system provider for now; swap
+  // this for stripe/paypal once those plugins are configured.
+  useEffect(() => {
+    void initiatePayment();
+  }, []);
+
   return (
     <div className="bg-white shadow-1 rounded-[10px] mt-7.5">
       <div className="border-b border-gray-3 py-5 px-4 sm:px-8.5">

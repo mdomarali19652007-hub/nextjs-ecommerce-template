@@ -1,3 +1,6 @@
+// TODO: migrate blog posts to a real CMS. Editorial content is intentionally
+// preserved as static data; the Sanity-to-Medusa migration only covers
+// commerce data (products, categories, cart, orders).
 import { BlogItem } from "@/types/blogItem";
 
 const blogData: BlogItem[] = [

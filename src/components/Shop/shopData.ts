@@ -1,5 +1,14 @@
 import { Product } from "@/types/product";
-const shopData: Product[] = [
+import { getProducts } from "@/lib/medusa/products";
+
+/**
+ * Fallback catalog used when the Medusa backend is unreachable (e.g. local
+ * development before running `npm run db:setup` in /medusa). The numbers
+ * here mirror the original static template so the storefront still renders
+ * something demo-able. After the seed script populates Medusa, the live
+ * data takes precedence.
+ */
+const fallbackShopData: Product[] = [
   {
     title: "Havit HV-G69 USB Gamepad",
     reviews: 15,
@@ -86,7 +95,7 @@ const shopData: Product[] = [
     },
   },
   {
-    title: "Logitech MX Master 3 Mouse",
+    title: "Logitech MX Master 3S",
     reviews: 15,
     price: 59.0,
     discountedPrice: 29.0,
@@ -103,7 +112,7 @@ const shopData: Product[] = [
     },
   },
   {
-    title: "Apple iPad Air 5th Gen - 64GB",
+    title: "Apple iPad Air 5th Gen",
     reviews: 15,
     price: 59.0,
     discountedPrice: 29.0,
@@ -138,4 +147,23 @@ const shopData: Product[] = [
   },
 ];
 
+/**
+ * Async helper used by Server Components. Pulls the live catalog from
+ * Medusa via the data-access layer; falls back to the static array above
+ * if Medusa is unreachable so the template still renders.
+ */
+export async function getShopData(
+  params: Parameters<typeof getProducts>[0] = {}
+): Promise<Product[]> {
+  const products = await getProducts({ limit: 24, ...params });
+  if (products.length === 0) return fallbackShopData;
+  return products;
+}
+
+/**
+ * Synchronous default export. Kept for any legacy import pattern
+ * (`import shopData from "..."`) that hasn't been migrated yet. Returns the
+ * fallback catalog only — no network — so rendering is never blocked.
+ */
+const shopData = fallbackShopData;
 export default shopData;

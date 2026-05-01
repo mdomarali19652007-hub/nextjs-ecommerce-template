@@ -10,8 +10,12 @@ import PriceDropdown from "./PriceDropdown";
 import shopData from "../Shop/shopData";
 import SingleGridItem from "../Shop/SingleGridItem";
 import SingleListItem from "../Shop/SingleListItem";
+import type { Product } from "@/types/product";
 
-const ShopWithSidebar = () => {
+type Props = { initialProducts?: Product[] };
+
+const ShopWithSidebar = ({ initialProducts }: Props = {}) => {
+  const products = initialProducts && initialProducts.length > 0 ? initialProducts : shopData;
   const [productStyle, setProductStyle] = useState("grid");
   const [productSidebar, setProductSidebar] = useState(false);
   const [stickyMenu, setStickyMenu] = useState(false);
@@ -278,7 +282,7 @@ const ShopWithSidebar = () => {
                     : "flex flex-col gap-7.5"
                 }`}
               >
-                {shopData.map((item, key) =>
+                {products.map((item, key) =>
                   productStyle === "grid" ? (
                     <SingleGridItem item={item} key={key} />
                   ) : (

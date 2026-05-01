@@ -2,10 +2,8 @@
 import React, { useEffect, useState } from "react";
 
 import { useCartModalContext } from "@/app/context/CartSidebarModalContext";
-import {
-  removeItemFromCart,
-  selectTotalPrice,
-} from "@/redux/features/cart-slice";
+import { selectTotalPrice } from "@/redux/features/cart-slice";
+import { removeItemFromCartAsync as removeItemFromCart } from "@/redux/features/cart-thunks";
 import { useAppSelector } from "@/redux/store";
 import { useSelector } from "react-redux";
 import SingleItem from "./SingleItem";
