@@ -33,8 +33,14 @@ import {
   ProductStatus,
 } from "@medusajs/framework/utils";
 
-const STOREFRONT_IMAGE_BASE =
-  process.env.STOREFRONT_IMAGE_BASE_URL || "http://localhost:3000";
+// Product images live in the storefront's /public/images/products directory
+// and are referenced by relative path. Storing relative URLs lets next/image
+// serve them directly as static assets (no remote-image optimizer fetch, no
+// hostname whitelisting, no SSRF "resolved to private ip" errors against
+// localhost). To host product images on a CDN instead, set
+// STOREFRONT_IMAGE_BASE_URL to the absolute origin (e.g. https://cdn.example.com)
+// and the seed will emit fully-qualified URLs.
+const STOREFRONT_IMAGE_BASE = process.env.STOREFRONT_IMAGE_BASE_URL ?? "";
 
 const productImage = (slug: string, size: "sm" | "bg", n: number) =>
   `${STOREFRONT_IMAGE_BASE}/images/products/${slug}-${size}-${n}.png`;
