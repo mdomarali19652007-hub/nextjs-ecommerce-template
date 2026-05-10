@@ -80,7 +80,8 @@ AUTH_CORS=https://shop.example.com,https://admin.example.com
 | `npm run start` | Start the production server. |
 | `npm run db:migrate` | Run pending migrations. |
 | `npm run db:rollback` | Roll back the last migration. |
-| `npm run db:reset` | Drop and recreate the database. **Destructive.** |
+| `npm run db:drop` | Drop the application database. **Destructive.** |
+| `npm run db:reset` | Drop, recreate, and re-migrate the database. **Destructive.** |
 | `npm run user -- -e x@y -p z` | Create or update an admin user. |
 | `npm run seed` | Seed the storefront catalog. |
 

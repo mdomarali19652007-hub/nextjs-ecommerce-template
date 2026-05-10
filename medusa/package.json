@@ -12,7 +12,8 @@
     "db:setup": "medusa db:create && medusa db:migrate",
     "db:migrate": "medusa db:migrate",
     "db:rollback": "medusa db:rollback",
-    "db:reset": "medusa db:reset",
+    "db:drop": "ts-node ./src/scripts/db-reset.ts",
+    "db:reset": "ts-node ./src/scripts/db-reset.ts && medusa db:create && medusa db:migrate",
     "user": "medusa user",
     "seed": "medusa exec ./src/scripts/seed-storefront.ts"
   },
