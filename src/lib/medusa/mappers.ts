@@ -58,12 +58,44 @@ const variantPrice = (variant: StoreProductVariant | undefined) => {
   };
 };
 
+/**
+ * Convert image URLs that point at the storefront's own origin into relative
+ * paths so next/image serves them directly from `/public` instead of fetching
+ * via the remote-image optimizer. Next 16's optimizer refuses to fetch URLs
+ * that resolve to private IPs (e.g. `localhost:3000` -> 127.0.0.1) for SSRF
+ * safety, which would otherwise break every product image on local dev.
+ *
+ * The match list is configurable via NEXT_PUBLIC_STOREFRONT_IMAGE_BASE_URL
+ * (comma-separated origins are supported). Absolute URLs not matching one of
+ * these origins are left as-is so genuine CDN URLs (S3, R2, etc.) still flow
+ * through the optimizer normally.
+ */
+const STOREFRONT_IMAGE_ORIGINS = (
+  process.env.NEXT_PUBLIC_STOREFRONT_IMAGE_BASE_URL ?? "http://localhost:3000"
+)
+  .split(",")
+  .map((origin) => origin.trim().replace(/\/+$/, ""))
+  .filter(Boolean);
+
+const stripStorefrontOrigin = (url: string): string => {
+  if (!url) return url;
+  // Already relative.
+  if (url.startsWith("/")) return url;
+  for (const origin of STOREFRONT_IMAGE_ORIGINS) {
+    if (url.startsWith(`${origin}/`)) {
+      return url.slice(origin.length);
+    }
+  }
+  return url;
+};
+
 const collectImages = (product: StoreProduct): string[] => {
   const fromImages = (product.images ?? [])
     .map((img) => img?.url)
-    .filter((url): url is string => Boolean(url));
+    .filter((url): url is string => Boolean(url))
+    .map(stripStorefrontOrigin);
   if (fromImages.length > 0) return fromImages;
-  if (product.thumbnail) return [product.thumbnail];
+  if (product.thumbnail) return [stripStorefrontOrigin(product.thumbnail)];
   return [];
 };
 
